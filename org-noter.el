@@ -277,6 +277,18 @@ The title used will be the default one."
   level num-notes-in-view window-behavior window-location doc-split-fraction auto-save-last-location
   hide-other closest-tipping-point)
 
+(defun org-noter--pre-insert-stub (selected-text)
+  "This is stub for org-noter-pre-insert-note var.
+This function does nothing beside returning SELECTED-TEXT.
+Users should override `org-noter-pre-insert-note`
+directly with their own lambda function"
+  selected-text)
+
+(defvar org-noter-pre-insert-note 'org-noter--pre-insert-stub
+  "Any selected-text go through function assigned to this var.
+Override it with your own lambda if you want to wrap a SELECTED-TEXT into
+#+BEGIN_QUOTE block for example")
+
 (defvar org-noter--sessions nil
   "List of `org-noter' sessions.")
 
@@ -1840,7 +1852,7 @@ defines if the text should be inserted inside the note."
                    (unless (bolp) (insert "\n"))
                    (org-N-empty-lines-before-current (1- empty-lines-number)))
 
-                 (when (and org-noter-insert-selected-text-inside-note selected-text) (insert selected-text)))
+                 (when (and org-noter-insert-selected-text-inside-note selected-text) (insert (funcall org-noter-pre-insert-note selected-text))))
 
              ;; NOTE(nox): Inserting a new note
              (let ((reference-element-cons (org-noter--view-info-reference-for-insertion view-info))
